@@ -1,4 +1,3 @@
 # Plate
 
-Template files in CLI for quick creation.
-
+Generate templated files quickly from your terminal.
