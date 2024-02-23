@@ -1,0 +1,20 @@
+name: build
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Nix
+        uses: cachix/install-nix-action@v17
+      - name: Build
+        run: nix build .
+      - name: Save build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: plate
+          path: result/bin/plate
