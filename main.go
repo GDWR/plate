@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	Version       = "local development" // This is replaced at build time via ldflags, for releases
 	templateDir   = "$HOME/.local/share/plate"
 	configDir     = "$HOME/.config/plate"
 	configName    = "config"
@@ -150,7 +151,7 @@ func main() {
 	}
 
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
-
+	rootCmd.Version = Version
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(createCmd)
