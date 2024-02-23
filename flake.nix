@@ -1,5 +1,5 @@
 {
-  description = "Template files in CLI for quick creation.";
+  description = "Generate templated files quickly from your terminal.";
 
   outputs = { self, nixpkgs, flake-utils }: 
     flake-utils.lib.eachDefaultSystem (system:
