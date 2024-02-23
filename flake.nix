@@ -17,7 +17,7 @@
           default = plate;
         };
         devShells.default = pkgs.mkShell {
-          packages = [ pkgs.go ];
+          packages = [ pkgs.go pkgs.gopls ];
         };
       }
     );
