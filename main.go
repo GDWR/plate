@@ -24,9 +24,10 @@ var (
 		},
 	}
 	addCmd = &cobra.Command{
-		Use:   "add",
-		Short: "Add a new template",
-		Args:  cobra.ExactArgs(1),
+		Use:     "add",
+		Aliases: []string{"a"},
+		Short:   "Add a new template",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			editor := os.Getenv("EDITOR")
 			if editor == "" {
@@ -42,9 +43,10 @@ var (
 	}
 
 	listCmd = &cobra.Command{
-		Use:   "list",
-		Short: "List all templates",
-		Args:  cobra.NoArgs,
+		Use:     "list",
+		Aliases: []string{"ls", "l"},
+		Short:   "List all templates",
+		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			dir := os.ExpandEnv(templateDir)
 			files, err := os.ReadDir(dir)
@@ -54,6 +56,32 @@ var (
 
 			for _, file := range files {
 				fmt.Printf("- %s\n", file.Name())
+			}
+
+			return nil
+		},
+	}
+
+	createCmd = &cobra.Command{
+		Use:     "create",
+		Aliases: []string{"c"},
+		Short:   "Create a new file from a template",
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			templateName := args[0]
+			dst := args[1]
+			templateFile := fmt.Sprintf("%s/%s", os.ExpandEnv(templateDir), templateName)
+			if _, err := os.Stat(templateFile); os.IsNotExist(err) {
+				return fmt.Errorf("template %s does not exist", templateName)
+			}
+
+			data, err := os.ReadFile(templateFile)
+			if err != nil {
+				return fmt.Errorf("template %s could not be read", templateName)
+			}
+
+			if err := os.WriteFile(dst, data, 0644); err != nil {
+				return fmt.Errorf("%s could not be written to", dst)
 			}
 
 			return nil
@@ -104,6 +132,7 @@ func main() {
 
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(createCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
