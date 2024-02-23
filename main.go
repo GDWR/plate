@@ -26,6 +26,7 @@ var (
 	addCmd = &cobra.Command{
 		Use:     "add",
 		Aliases: []string{"a"},
+		Example: "plate add <template>",
 		Short:   "Add a new template",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -61,10 +62,10 @@ var (
 			return nil
 		},
 	}
-
 	createCmd = &cobra.Command{
 		Use:     "create",
 		Aliases: []string{"c"},
+		Example: "plate create <template> <destination>",
 		Short:   "Create a new file from a template",
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -82,6 +83,26 @@ var (
 
 			if err := os.WriteFile(dst, data, 0644); err != nil {
 				return fmt.Errorf("%s could not be written to", dst)
+			}
+
+			return nil
+		},
+	}
+	deleteCmd = &cobra.Command{
+		Use:     "delete",
+		Aliases: []string{"d", "rm"},
+		Example: "plate delete <template>",
+		Short:   "Delete a template",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			templateName := args[0]
+			templateFile := fmt.Sprintf("%s/%s", os.ExpandEnv(templateDir), templateName)
+			if _, err := os.Stat(templateFile); os.IsNotExist(err) {
+				return fmt.Errorf("template %s does not exist", templateName)
+			}
+
+			if err := os.Remove(templateFile); err != nil {
+				return fmt.Errorf("template %s could not be deleted", templateName)
 			}
 
 			return nil
@@ -133,6 +154,7 @@ func main() {
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(deleteCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
